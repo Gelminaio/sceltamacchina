@@ -30,14 +30,14 @@
     }
     .arrow {
       position: absolute;
-      top: -40px;
+      top: -25px;
       left: 50%;
       transform: translateX(-50%);
       width: 0;
       height: 0;
-      border-left: 25px solid transparent;
-      border-right: 25px solid transparent;
-      border-bottom: 40px solid #ffeb3b;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 30px solid #ffeb3b;
       z-index: 10;
       transition: transform 0.2s;
     }
@@ -71,10 +71,10 @@
     .car {
       position: fixed;
       bottom: 20px;
-      left: -200px;
       width: 120px;
-      transition: left 3s;
+      transition: all 3s ease;
       z-index: 5;
+      display: none;
     }
   </style>
 </head>
@@ -93,7 +93,7 @@
 
   <div class="result" id="result"></div>
 
-  <img src="https://i.postimg.cc/G3Kkkprg/car.png" class="car" id="car">
+  <img class="car" id="car">
 
   <script>
     const nomi = ['Martino', 'Pietro', 'Martino', 'Pietro', 'Martino', 'Pietro', 'Martino', 'Pietro'];
@@ -132,9 +132,10 @@
 
     function giraRuota() {
       result.style.opacity = 0;
-      car.style.left = '-200px';
       const arrow = document.querySelector('.arrow');
       arrow.classList.remove('vibrate');
+      car.style.display = 'none';
+      car.style.transition = 'none';
 
       const extraDegrees = Math.floor(Math.random() * 360);
       angle += 1440 + extraDegrees;
@@ -148,8 +149,24 @@
         result.textContent = `${vincitore} guida!`;
         result.style.opacity = 1;
 
-        car.style.left = '120%';
+        // freccia vibra
         arrow.classList.add('vibrate');
+
+        // animazione macchina
+        car.style.transition = 'all 3s ease';
+        car.style.display = 'block';
+
+        if (vincitore === 'Martino') {
+          car.src = 'https://i.postimg.cc/g0BtRBL9/martino-car.png'; // metti qui il vero link o immagine caricata tua
+          car.style.left = '-150px';
+          car.style.right = '';
+          setTimeout(() => car.style.left = '110%', 50);
+        } else {
+          car.src = 'https://i.postimg.cc/hP7pRtFM/pietro-car.png'; // metti qui il vero link o immagine caricata tua
+          car.style.right = '-150px';
+          car.style.left = '';
+          setTimeout(() => car.style.right = '110%', 50);
+        }
 
       }, 5200);
     }
