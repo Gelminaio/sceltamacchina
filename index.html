@@ -23,8 +23,8 @@
     .wheel-container {
       position: relative;
       margin: 0 auto;
-      width: 300px;
-      height: 300px;
+      width: 350px;
+      height: 350px;
       border: 10px solid #fff;
       border-radius: 50%;
       overflow: hidden;
@@ -35,24 +35,23 @@
       height: 100%;
       border-radius: 50%;
       transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
-      background: conic-gradient(
-        #00ff99 0% 25%, 
-        #ff3366 25% 50%, 
-        #00ff99 50% 75%, 
-        #ff3366 75% 100%
-      );
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: relative;
     }
 
-    .wheel span {
+    .slice {
       position: absolute;
       width: 50%;
-      text-align: center;
-      transform-origin: 100% 50%;
-      font-size: 1.3rem;
+      height: 50%;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0% 0%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding-left: 10px;
+      color: #fff;
       font-weight: bold;
+      font-size: 1rem;
     }
 
     .button {
@@ -107,12 +106,7 @@
 
   <div class="wheel-container">
     <div class="arrow"></div>
-    <div class="wheel" id="wheel">
-      <span style="transform: rotate(45deg)">Martino</span>
-      <span style="transform: rotate(135deg)">Pietro</span>
-      <span style="transform: rotate(225deg)">Martino</span>
-      <span style="transform: rotate(315deg)">Pietro</span>
-    </div>
+    <div class="wheel" id="wheel"></div>
   </div>
 
   <button class="button" onclick="giraRuota()">Gira!</button>
@@ -121,29 +115,49 @@
   <div class="car" id="car">🚗💨</div>
 
   <script>
+    const wheel = document.getElementById('wheel');
+    const result = document.getElementById('result');
+    const car = document.getElementById('car');
+
+    const nomi = [];
+    const fette = 12; // numero fette
+
+    // alterna Martino e Pietro
+    for (let i = 0; i < fette; i++) {
+      nomi.push(i % 2 === 0 ? 'Martino' : 'Pietro');
+    }
+
+    const colors = ['#00ff99', '#ff3366'];
+    const sliceAngle = 360 / fette;
+
+    nomi.forEach((nome, i) => {
+      const slice = document.createElement('div');
+      slice.className = 'slice';
+      slice.style.transform = `rotate(${i * sliceAngle}deg) skewY(${90 - sliceAngle}deg)`;
+      slice.style.background = colors[i % 2];
+
+      const label = document.createElement('div');
+      label.innerText = nome;
+      label.style.transform = `skewY(${-(90 - sliceAngle)}deg) rotate(${sliceAngle / 2}deg)`;
+      slice.appendChild(label);
+
+      wheel.appendChild(slice);
+    });
+
     let angle = 0;
 
     function giraRuota() {
-      const wheel = document.getElementById('wheel');
-      const result = document.getElementById('result');
-      const car = document.getElementById('car');
-
       result.style.opacity = 0;
       car.style.left = '-200px';
 
       const extraDegrees = Math.floor(Math.random() * 360);
       angle += 1440 + extraDegrees;
-
       wheel.style.transform = `rotate(${angle}deg)`;
 
       setTimeout(() => {
-        const finalAngle = (angle % 360);
-
-        let vincitore;
-        if (finalAngle >= 0 && finalAngle < 90) vincitore = "Martino";
-        else if (finalAngle >= 90 && finalAngle < 180) vincitore = "Pietro";
-        else if (finalAngle >= 180 && finalAngle < 270) vincitore = "Martino";
-        else vincitore = "Pietro";
+        const finalAngle = (360 - (angle % 360)) % 360;
+        const index = Math.floor(finalAngle / sliceAngle);
+        const vincitore = nomi[index];
 
         result.textContent = `${vincitore} guida!`;
         result.style.opacity = 1;
