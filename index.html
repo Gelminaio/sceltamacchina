@@ -3,152 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <title>Chi Guida Stasera?</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #0a0a0a;
+      background: #111;
       color: #fff;
-      font-family: 'Montserrat', sans-serif;
+      font-family: sans-serif;
       text-align: center;
-      margin: 0;
-      padding: 0;
       overflow-x: hidden;
     }
-
-    h1 {
-      font-size: 3rem;
-      margin: 50px 0 20px;
-    }
-
-    .wheel-container {
+    .container {
       position: relative;
-      margin: 0 auto;
+      margin: 50px auto;
       width: 350px;
       height: 350px;
-      border: 10px solid #fff;
-      border-radius: 50%;
-      overflow: hidden;
     }
-
     .wheel {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
+      border: 8px solid #fff;
       position: relative;
+      transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
     }
-
-    .slice {
-      position: absolute;
-      width: 50%;
-      height: 50%;
-      top: 50%;
-      left: 50%;
-      transform-origin: 0% 0%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      padding-left: 10px;
-      color: #fff;
-      font-weight: bold;
-      font-size: 1rem;
+    canvas {
+      border-radius: 50%;
     }
-
-    .button {
-      margin-top: 40px;
-      background-color: #fff;
-      color: #000;
-      border: none;
-      padding: 15px 30px;
-      border-radius: 50px;
-      font-size: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .button:hover {
-      background-color: #00ff99;
-      color: #000;
-    }
-
     .arrow {
       position: absolute;
-      top: -30px;
+      top: -40px;
       left: 50%;
       transform: translateX(-50%);
-      width: 0; 
-      height: 0; 
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 30px solid #fff;
+      width: 0;
+      height: 0;
+      border-left: 25px solid transparent;
+      border-right: 25px solid transparent;
+      border-bottom: 40px solid #ffeb3b;
+      z-index: 10;
+      transition: transform 0.2s;
     }
-
+    .arrow.vibrate {
+      animation: vibra 0.4s infinite alternate;
+    }
+    @keyframes vibra {
+      0% { transform: translateX(-50%) rotate(-5deg); }
+      100% { transform: translateX(-50%) rotate(5deg); }
+    }
+    button {
+      margin-top: 30px;
+      padding: 15px 30px;
+      background: #ff4757;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      border-radius: 50px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e84118;
+    }
     .result {
-      margin-top: 50px;
-      font-size: 3rem;
+      margin-top: 20px;
+      font-size: 26px;
+      font-weight: bold;
       opacity: 0;
-      transition: opacity 1s ease;
+      transition: opacity 0.5s;
     }
-
     .car {
-      position: absolute;
-      top: 80%;
+      position: fixed;
+      bottom: 20px;
       left: -200px;
-      font-size: 3rem;
-      transition: left 3s ease;
+      width: 120px;
+      transition: left 3s;
+      z-index: 5;
     }
-
   </style>
 </head>
 <body>
 
-  <h1>Chi guida stasera?</h1>
+  <h1>Chi Guida Stasera?</h1>
 
-  <div class="wheel-container">
+  <div class="container">
     <div class="arrow"></div>
-    <div class="wheel" id="wheel"></div>
+    <div class="wheel">
+      <canvas id="canvas" width="350" height="350"></canvas>
+    </div>
   </div>
 
-  <button class="button" onclick="giraRuota()">Gira!</button>
+  <button onclick="giraRuota()">Gira!</button>
 
   <div class="result" id="result"></div>
-  <div class="car" id="car">🚗💨</div>
+
+  <img src="https://i.postimg.cc/G3Kkkprg/car.png" class="car" id="car">
 
   <script>
-    const wheel = document.getElementById('wheel');
+    const nomi = ['Martino', 'Pietro', 'Martino', 'Pietro', 'Martino', 'Pietro', 'Martino', 'Pietro'];
+    const colors = ['#ff4757', '#2ed573', '#ff4757', '#2ed573', '#ff4757', '#2ed573', '#ff4757', '#2ed573'];
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const sliceAngle = 360 / nomi.length;
+    const wheel = document.querySelector('.wheel');
     const result = document.getElementById('result');
     const car = document.getElementById('car');
+    let angle = 0;
 
-    const nomi = [];
-    const fette = 12; // numero fette
+    function disegnaRuota() {
+      for (let i = 0; i < nomi.length; i++) {
+        const startAngle = (sliceAngle * i) * Math.PI / 180;
+        const endAngle = (sliceAngle * (i + 1)) * Math.PI / 180;
 
-    // alterna Martino e Pietro
-    for (let i = 0; i < fette; i++) {
-      nomi.push(i % 2 === 0 ? 'Martino' : 'Pietro');
+        ctx.beginPath();
+        ctx.moveTo(175, 175);
+        ctx.arc(175, 175, 175, startAngle, endAngle);
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+        ctx.save();
+
+        ctx.translate(175, 175);
+        ctx.rotate(startAngle + (endAngle - startAngle) / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 20px sans-serif";
+        ctx.fillText(nomi[i], 165, 10);
+        ctx.restore();
+      }
     }
 
-    const colors = ['#00ff99', '#ff3366'];
-    const sliceAngle = 360 / fette;
-
-    nomi.forEach((nome, i) => {
-      const slice = document.createElement('div');
-      slice.className = 'slice';
-      slice.style.transform = `rotate(${i * sliceAngle}deg) skewY(${90 - sliceAngle}deg)`;
-      slice.style.background = colors[i % 2];
-
-      const label = document.createElement('div');
-      label.innerText = nome;
-      label.style.transform = `skewY(${-(90 - sliceAngle)}deg) rotate(${sliceAngle / 2}deg)`;
-      slice.appendChild(label);
-
-      wheel.appendChild(slice);
-    });
-
-    let angle = 0;
+    disegnaRuota();
 
     function giraRuota() {
       result.style.opacity = 0;
       car.style.left = '-200px';
+      const arrow = document.querySelector('.arrow');
+      arrow.classList.remove('vibrate');
 
       const extraDegrees = Math.floor(Math.random() * 360);
       angle += 1440 + extraDegrees;
@@ -163,6 +149,7 @@
         result.style.opacity = 1;
 
         car.style.left = '120%';
+        arrow.classList.add('vibrate');
 
       }, 5200);
     }
