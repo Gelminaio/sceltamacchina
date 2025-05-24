@@ -157,14 +157,18 @@
         car.style.display = 'block';
 
         if (vincitore === 'Martino') {
-          car.src = 'https://banner2.cleanpng.com/20180705/bpy/aaxk0iflb.webp'; // metti qui il vero link o immagine caricata tua
+          car.src = 'https://banner2.cleanpng.com/20180705/bpy/aaxk0iflb.webp';
           car.style.left = '-150px';
           car.style.right = '';
+          car.style.width = '400px';         // più grande
+          car.style.bottom = '150px';        // meno sul fondo
           setTimeout(() => car.style.left = '110%', 50);
         } else {
-          car.src = 'https://banner2.cleanpng.com/20180507/quw/kisspng-bmw-x1-car-sport-utility-vehicle-volvo-5af0faa1a1cca6.0330580515257422416627.jpg'; // metti qui il vero link o immagine caricata tua
+          car.src = 'https://banner2.cleanpng.com/20180507/quw/kisspng-bmw-x1-car-sport-utility-vehicle-volvo-5af0faa1a1cca6.0330580515257422416627.jpg';
           car.style.right = '-150px';
           car.style.left = '';
+          car.style.width = '400px';         // più grande
+          car.style.bottom = '150px';        // meno sul fondo
           setTimeout(() => car.style.right = '110%', 50);
         }
 
