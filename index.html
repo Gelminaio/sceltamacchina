@@ -7,81 +7,150 @@
   <style>
     body {
       background-color: #0a0a0a;
-      color: #ffffff;
+      color: #fff;
       font-family: 'Montserrat', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      text-align: center;
       margin: 0;
+      padding: 0;
+      overflow-x: hidden;
     }
+
     h1 {
       font-size: 3rem;
-      margin-bottom: 50px;
+      margin: 50px 0 20px;
     }
+
+    .wheel-container {
+      position: relative;
+      margin: 0 auto;
+      width: 300px;
+      height: 300px;
+      border: 10px solid #fff;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
+      background: conic-gradient(
+        #00ff99 0% 25%, 
+        #ff3366 25% 50%, 
+        #00ff99 50% 75%, 
+        #ff3366 75% 100%
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wheel span {
+      position: absolute;
+      width: 50%;
+      text-align: center;
+      transform-origin: 100% 50%;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
     .button {
-      background-color: #ffffff;
-      color: #0a0a0a;
+      margin-top: 40px;
+      background-color: #fff;
+      color: #000;
       border: none;
-      padding: 20px 40px;
+      padding: 15px 30px;
       border-radius: 50px;
       font-size: 1.5rem;
       cursor: pointer;
       transition: all 0.3s ease;
     }
+
     .button:hover {
       background-color: #00ff99;
       color: #000;
     }
+
+    .arrow {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; 
+      height: 0; 
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 30px solid #fff;
+    }
+
     .result {
-      margin-top: 60px;
+      margin-top: 50px;
       font-size: 3rem;
-      font-weight: bold;
       opacity: 0;
-      transition: opacity 0.8s ease, transform 0.8s ease;
+      transition: opacity 1s ease;
     }
-    .visible {
-      opacity: 1;
-      transform: scale(1.2);
+
+    .car {
+      position: absolute;
+      top: 80%;
+      left: -200px;
+      font-size: 3rem;
+      transition: left 3s ease;
     }
-    .spinner {
-      margin-top: 40px;
-      font-size: 2rem;
-      animation: spin 1s linear infinite;
-      display: none;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg);}
-      100% { transform: rotate(360deg);}
-    }
+
   </style>
 </head>
 <body>
 
   <h1>Chi guida stasera?</h1>
-  <button class="button" onclick="decidi()">Decidi</button>
 
-  <div class="spinner" id="spinner">🌀</div>
+  <div class="wheel-container">
+    <div class="arrow"></div>
+    <div class="wheel" id="wheel">
+      <span style="transform: rotate(45deg)">Martino</span>
+      <span style="transform: rotate(135deg)">Pietro</span>
+      <span style="transform: rotate(225deg)">Martino</span>
+      <span style="transform: rotate(315deg)">Pietro</span>
+    </div>
+  </div>
+
+  <button class="button" onclick="giraRuota()">Gira!</button>
+
   <div class="result" id="result"></div>
+  <div class="car" id="car">🚗💨</div>
 
   <script>
-    const nomi = ["Martino", "Pietro"];
+    let angle = 0;
 
-    function decidi() {
-      const spinner = document.getElementById('spinner');
+    function giraRuota() {
+      const wheel = document.getElementById('wheel');
       const result = document.getElementById('result');
-      
-      result.classList.remove('visible');
-      result.textContent = '';
-      spinner.style.display = 'block';
+      const car = document.getElementById('car');
+
+      result.style.opacity = 0;
+      car.style.left = '-200px';
+
+      const extraDegrees = Math.floor(Math.random() * 360);
+      angle += 1440 + extraDegrees;
+
+      wheel.style.transform = `rotate(${angle}deg)`;
 
       setTimeout(() => {
-        spinner.style.display = 'none';
-        const scelto = nomi[Math.floor(Math.random() * nomi.length)];
-        result.textContent = scelto + " guida!";
-        result.classList.add('visible');
-      }, 2000);
+        const finalAngle = (angle % 360);
+
+        let vincitore;
+        if (finalAngle >= 0 && finalAngle < 90) vincitore = "Martino";
+        else if (finalAngle >= 90 && finalAngle < 180) vincitore = "Pietro";
+        else if (finalAngle >= 180 && finalAngle < 270) vincitore = "Martino";
+        else vincitore = "Pietro";
+
+        result.textContent = `${vincitore} guida!`;
+        result.style.opacity = 1;
+
+        car.style.left = '120%';
+
+      }, 5200);
     }
   </script>
 
